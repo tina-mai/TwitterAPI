@@ -1,0 +1,39 @@
+<component name="libraryTable">
+  <library name="twitter.api.java.sdk" type="repository">
+    <properties maven-id="com.twitter:twitter-api-java-sdk:2.0.2" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/twitter/twitter-api-java-sdk/2.0.2/twitter-api-java-sdk-2.0.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/io/swagger/swagger-annotations/1.6.5/swagger-annotations-1.6.5.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/squareup/okhttp3/okhttp/4.9.3/okhttp-4.9.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/squareup/okio/okio/2.8.0/okio-2.8.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib-common/1.4.0/kotlin-stdlib-common-1.4.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib/1.4.10/kotlin-stdlib-1.4.10.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jetbrains/annotations/13.0/annotations-13.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/squareup/okhttp3/logging-interceptor/4.9.3/logging-interceptor-4.9.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.4.10/kotlin-stdlib-jdk8-1.4.10.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.4.10/kotlin-stdlib-jdk7-1.4.10.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.9.0/gson-2.9.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/io/gsonfire/gson-fire/1.8.5/gson-fire-1.8.5.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/oltu/oauth2/org.apache.oltu.oauth2.client/1.0.1/org.apache.oltu.oauth2.client-1.0.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/oltu/oauth2/org.apache.oltu.oauth2.common/1.0.1/org.apache.oltu.oauth2.common-1.0.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/json/json/20140107/json-20140107.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/commons-codec/commons-codec/1.9/commons-codec-1.9.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.7/slf4j-api-1.7.7.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/openapitools/jackson-databind-nullable/0.2.2/jackson-databind-nullable-0.2.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.12.2/jackson-databind-2.12.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.12.2/jackson-annotations-2.12.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-core/2.12.2/jackson-core-2.12.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/javax/ws/rs/jsr311-api/1.1.1/jsr311-api-1.1.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/javax/ws/rs/javax.ws.rs-api/2.1.1/javax.ws.rs-api-2.1.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/twitter/joauth/6.0.3/joauth-6.0.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/guava/guava/15.0/guava-15.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/scribejava/scribejava-apis/8.3.1/scribejava-apis-8.3.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/scribejava/scribejava-core/8.3.1/scribejava-core-8.3.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/scribejava/scribejava-java8/8.3.1/scribejava-java8-8.3.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
