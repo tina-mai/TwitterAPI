@@ -31,8 +31,8 @@ public class FilteredStreamDemo {
         if (null != bearerToken) {
             Map<String, String> rules = new HashMap<>();
 //            rules.put("apple has:images", "apple images");
-//            rules.put("dogs has:images", "dog images"); // this works
-            rules.put("from:elonmusk", "elon musk");
+            rules.put("dogs -is:retweet", "dog images"); // this works
+//            rules.put("from:elonmusk", "elon musk");
 //            rules.put("cats has:hashtags", "cat hashtags"); // this works
 //            rules.put("cat -cats", "just a cat"); // doesn't work
 
@@ -60,7 +60,7 @@ public class FilteredStreamDemo {
 
         HttpResponse response = httpClient.execute(httpGet);
         HttpEntity entity = response.getEntity();
-        System.out.println(entity);
+
         if (null != entity) {
             BufferedReader reader = new BufferedReader(new InputStreamReader((entity.getContent())));
             String line = reader.readLine();
