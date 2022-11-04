@@ -1,7 +1,10 @@
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -13,6 +16,8 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /*
  * Sample code to demonstrate the use of the Recent search endpoint
@@ -27,8 +32,8 @@ public class RecentSearchDemo {
         if (null != bearerToken) {
             //Replace the search term with a term of your choice
 //            String response = search("from:TwitterDev OR from:SnowBotDev OR from:DailyNASA", bearerToken);
-            String response = search("from:elonmusk", bearerToken);
-            System.out.println(response);
+            String response = search("from:elonmusk -is:reply", bearerToken);
+//            System.out.println(response);
         } else {
             System.out.println("There was a problem getting you bearer token. Please make sure you set the BEARER_TOKEN environment variable");
         }
@@ -49,7 +54,9 @@ public class RecentSearchDemo {
         ArrayList<NameValuePair> queryParameters;
         queryParameters = new ArrayList<>();
         queryParameters.add(new BasicNameValuePair("query", searchString));
+
         uriBuilder.addParameters(queryParameters);
+//        System.out.println(uriBuilder);
 
         HttpGet httpGet = new HttpGet(uriBuilder.build());
         httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken));
@@ -57,9 +64,40 @@ public class RecentSearchDemo {
 
         HttpResponse response = httpClient.execute(httpGet);
         HttpEntity entity = response.getEntity();
-        if (null != entity) {
-            searchResponse = EntityUtils.toString(entity, "UTF-8");
+//        if (null != entity) {
+//            searchResponse = EntityUtils.toString(entity, "UTF-8");
+//        }
+
+//        if (entity != null) {
+//            searchResponse = EntityUtils.toString(entity);
+//            JsonObject jsonResp = new Gson().fromJson(searchResponse, JsonObject.class); // String to JSONObject
+//
+//            if (jsonResp.has("tweets")) // find text to replace "tweets"?
+//                System.out.println(jsonResp.get("tweets").toString().replace("\"", "")); // toString returns quoted values!
+//        }
+
+        if (entity != null) {
+            String retSrc = EntityUtils.toString(entity);
+            // parsing JSON
+            JSONObject result = new JSONObject(retSrc); //Convert String to JSON Object
+
+            JSONArray tokenList = result.getJSONArray("data");
+            JSONObject oj = tokenList.getJSONObject(0);
+            String token = oj.getString("text");
+            System.out.println(token);
         }
+
+//        if (null != entity) {
+//            JSONObject json = new JSONObject(EntityUtils.toString(entity, "UTF-8"));
+//            if (json.length() > 1) {
+//                JSONArray array = (JSONArray) json.get("data");
+//                for (int i = 0; i < array.length(); i++) {
+//                    JSONObject jsonObject = (JSONObject) array.get(i);
+//                    rules.add(jsonObject.getString("id"));
+//                }
+//            }
+//        }
+
         return searchResponse;
     }
 
