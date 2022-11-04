@@ -33,7 +33,8 @@ public class RecentSearchDemo {
             //Replace the search term with a term of your choice
 //            String response = search("from:TwitterDev OR from:SnowBotDev OR from:DailyNASA", bearerToken);
             String response = search("from:elonmusk -is:reply", bearerToken);
-//            System.out.println(response);
+            System.out.println("\n——— Unformatted return ———\n");
+            System.out.println(response);
         } else {
             System.out.println("There was a problem getting you bearer token. Please make sure you set the BEARER_TOKEN environment variable");
         }
@@ -68,35 +69,19 @@ public class RecentSearchDemo {
 //            searchResponse = EntityUtils.toString(entity, "UTF-8");
 //        }
 
-//        if (entity != null) {
-//            searchResponse = EntityUtils.toString(entity);
-//            JsonObject jsonResp = new Gson().fromJson(searchResponse, JsonObject.class); // String to JSONObject
-//
-//            if (jsonResp.has("tweets")) // find text to replace "tweets"?
-//                System.out.println(jsonResp.get("tweets").toString().replace("\"", "")); // toString returns quoted values!
-//        }
-
         if (entity != null) {
-            String retSrc = EntityUtils.toString(entity);
+
+            // isolating tweet text from HTTP –> JSON format
+            searchResponse = EntityUtils.toString(entity);
             // parsing JSON
-            JSONObject result = new JSONObject(retSrc); //Convert String to JSON Object
+            JSONObject result = new JSONObject(searchResponse); // convert String to JSON Object
 
-            JSONArray tokenList = result.getJSONArray("data");
-            JSONObject oj = tokenList.getJSONObject(0);
-            String token = oj.getString("text");
-            System.out.println(token);
+            JSONArray tweetList = result.getJSONArray("data");
+            JSONObject oj = tweetList.getJSONObject(0);
+            String tweet = oj.getString("text");
+            System.out.println(tweet);
+
         }
-
-//        if (null != entity) {
-//            JSONObject json = new JSONObject(EntityUtils.toString(entity, "UTF-8"));
-//            if (json.length() > 1) {
-//                JSONArray array = (JSONArray) json.get("data");
-//                for (int i = 0; i < array.length(); i++) {
-//                    JSONObject jsonObject = (JSONObject) array.get(i);
-//                    rules.add(jsonObject.getString("id"));
-//                }
-//            }
-//        }
 
         return searchResponse;
     }
