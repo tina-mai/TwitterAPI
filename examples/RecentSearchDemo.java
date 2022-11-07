@@ -3,6 +3,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.apache.http.HttpEntity;
@@ -32,12 +33,48 @@ public class RecentSearchDemo {
         if (null != bearerToken) {
             //Replace the search term with a term of your choice
 //            String response = search("from:TwitterDev OR from:SnowBotDev OR from:DailyNASA", bearerToken);
-            String response = search("from:elonmusk -is:reply", bearerToken);
+            String response = search("from:taylorswift13 -is:reply", bearerToken);
             System.out.println("\n——— Unformatted return ———\n");
             System.out.println(response);
+            System.out.println("-----------------");
+
+
+            String response2 = search("from:MichelleObama -is:reply", bearerToken);
+            System.out.println("\n——— Unformatted return ———\n");
+            System.out.println(response2);
+
         } else {
             System.out.println("There was a problem getting you bearer token. Please make sure you set the BEARER_TOKEN environment variable");
         }
+    }
+
+    // this method takes in the id generated from the search method, uses it to get expanded info (the username etc)
+    // about tweet
+    private static void tweetInfo(String id, String bearerToken) throws IOException, URISyntaxException{
+        HttpClient httpClient = HttpClients.custom()
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setCookieSpec(CookieSpecs.STANDARD).build())
+                .build();
+
+        URIBuilder uri2 =  new URIBuilder("https://api.twitter.com/2/tweets/" + id + "?expansions=author_id");
+        HttpGet httpGet2 = new HttpGet(uri2.build());
+
+        httpGet2.setHeader("Authorization", String.format("Bearer %s", bearerToken));
+        httpGet2.setHeader("Content-Type", "application/json");
+        HttpResponse response2 = httpClient.execute(httpGet2);
+        HttpEntity entity2 = response2.getEntity();
+        if (null != entity2) {
+            System.out.println("------User info--------");
+            String info = EntityUtils.toString(entity2);
+            JSONObject result = new JSONObject(info);
+            JSONObject userInfo1 = result.getJSONObject("includes");
+            JSONArray userInfo2 = userInfo1.getJSONArray("users");
+            JSONObject userInfo3 = userInfo2.getJSONObject(0);
+            String name = userInfo3.getString("name");
+            String username = userInfo3.getString("username");
+            System.out.println("Name: " + name +";  Username: " +  username);
+        }
+
     }
 
     /*
@@ -51,17 +88,20 @@ public class RecentSearchDemo {
                         .setCookieSpec(CookieSpecs.STANDARD).build())
                 .build();
 
-        URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent");
+        // I added the "tweet fields" that we want information about in this line
+        URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source");
+
         ArrayList<NameValuePair> queryParameters;
         queryParameters = new ArrayList<>();
         queryParameters.add(new BasicNameValuePair("query", searchString));
 
         uriBuilder.addParameters(queryParameters);
-//        System.out.println(uriBuilder);
 
         HttpGet httpGet = new HttpGet(uriBuilder.build());
+
         httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken));
         httpGet.setHeader("Content-Type", "application/json");
+
 
         HttpResponse response = httpClient.execute(httpGet);
         HttpEntity entity = response.getEntity();
@@ -77,9 +117,14 @@ public class RecentSearchDemo {
             JSONObject result = new JSONObject(searchResponse); // convert String to JSON Object
 
             JSONArray tweetList = result.getJSONArray("data");
-            JSONObject oj = tweetList.getJSONObject(0);
+            JSONObject oj = tweetList.getJSONObject(1);
             String tweet = oj.getString("text");
-            System.out.println(tweet);
+            String id = oj.getString("id");
+            String date = oj.getString("created_at");
+            System.out.println("Text: " + tweet);
+            System.out.println("Date created: " + date);
+            System.out.println();
+            tweetInfo(id,bearerToken);
 
         }
 

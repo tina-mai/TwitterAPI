@@ -17,7 +17,6 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 // TODO: where the sample code is from - https://github.com/twitterdev/Twitter-API-v2-sample-code
-// TODO: HTTP twitter code (potentially with time) - https://java.hotexamples.com/examples/-/HttpClient/execute/java-httpclient-execute-method-examples.html
 
 /*
  * Sample code to demonstrate the use of the Filtered Stream endpoint
@@ -30,12 +29,8 @@ public class FilteredStreamDemo {
         String bearerToken = "AAAAAAAAAAAAAAAAAAAAAF2vhwEAAAAAmUihYKuFWe%2BmdJsnQCy4UQQa8sk%3DGcYDJdMZ8QXyuiA6KqUnLhxzo1RdlMoZGbMn4sjN3G6g0Whyui";
         if (null != bearerToken) {
             Map<String, String> rules = new HashMap<>();
-//            rules.put("apple has:images", "apple images");
-            rules.put("dogs -is:retweet", "dog images"); // this works
-//            rules.put("from:elonmusk", "elon musk");
-//            rules.put("cats has:hashtags", "cat hashtags"); // this works
-//            rules.put("cat -cats", "just a cat"); // doesn't work
-
+            rules.put("cats has:images", "cat images");
+            rules.put("dogs has:images", "dog images");
             setupRules(bearerToken, rules);
             connectStream(bearerToken);
         } else {
@@ -60,7 +55,6 @@ public class FilteredStreamDemo {
 
         HttpResponse response = httpClient.execute(httpGet);
         HttpEntity entity = response.getEntity();
-
         if (null != entity) {
             BufferedReader reader = new BufferedReader(new InputStreamReader((entity.getContent())));
             String line = reader.readLine();
@@ -97,11 +91,7 @@ public class FilteredStreamDemo {
         HttpPost httpPost = new HttpPost(uriBuilder.build());
         httpPost.setHeader("Authorization", String.format("Bearer %s", bearerToken));
         httpPost.setHeader("content-type", "application/json");
-//        String duration = "86400000"; // duration: 1 minute
-//        StringEntity body = new StringEntity(getFormattedString("{\"add\": [%s]}", rules) + duration);
         StringEntity body = new StringEntity(getFormattedString("{\"add\": [%s]}", rules));
-//        String username = "Apple";
-//        StringEntity body = new StringEntity(getFormattedString("{\"add\": [%s]}", rules) + username);
         httpPost.setEntity(body);
         HttpResponse response = httpClient.execute(httpPost);
         HttpEntity entity = response.getEntity();

@@ -49,6 +49,7 @@ public class StreamingTweetHandlerImpl extends StreamingTweetHandler {
     placeFields.add("id");
     placeFields.add("name");
     placeFields.add("place_type");
+    //System.out.println(tweetFields);
 
     return this.apiInstance.tweets().sampleStream()
         .backfillMinutes(0)
