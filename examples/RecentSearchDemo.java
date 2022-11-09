@@ -33,15 +33,18 @@ public class RecentSearchDemo {
         if (null != bearerToken) {
             //Replace the search term with a term of your choice
 //            String response = search("from:TwitterDev OR from:SnowBotDev OR from:DailyNASA", bearerToken);
-            String response = search("from:taylorswift13 -is:reply", bearerToken);
+            String response1 = search("cat -is:retweet", bearerToken);
             System.out.println("\n——— Unformatted return ———\n");
-            System.out.println(response);
-            System.out.println("-----------------");
-
-
-            String response2 = search("from:MichelleObama -is:reply", bearerToken);
-            System.out.println("\n——— Unformatted return ———\n");
-            System.out.println(response2);
+            System.out.println(response1);
+//
+//            String response = search("from:taylorswift13", bearerToken);
+//            System.out.println("\n——— Unformatted return ———\n");
+//            System.out.println(response);
+//            System.out.println("-----------------");
+//
+//            String response2 = search("from:elonmusk -is:reply", bearerToken);
+//            System.out.println("\n——— Unformatted return ———\n");
+//            System.out.println(response2);
 
         } else {
             System.out.println("There was a problem getting you bearer token. Please make sure you set the BEARER_TOKEN environment variable");
@@ -89,7 +92,7 @@ public class RecentSearchDemo {
                 .build();
 
         // I added the "tweet fields" that we want information about in this line
-        URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source");
+        URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source,context_annotations&max_results=10"); // "&max_result=n" gives n number tweets; 10 <= n <= 100
 
         ArrayList<NameValuePair> queryParameters;
         queryParameters = new ArrayList<>();
@@ -117,11 +120,21 @@ public class RecentSearchDemo {
             JSONObject result = new JSONObject(searchResponse); // convert String to JSON Object
 
             JSONArray tweetList = result.getJSONArray("data");
-            JSONObject oj = tweetList.getJSONObject(1);
+            System.out.println(tweetList.length());
+            JSONObject oj = tweetList.getJSONObject(0); // gets one tweet from the list
             String tweet = oj.getString("text");
             String id = oj.getString("id");
             String date = oj.getString("created_at");
+            String entityName;
+            // some of the tweets don't have contexts so I made a try catch to print out the entity name if they do
+            try {
+                JSONArray name = oj.getJSONArray("context_annotations");
+                JSONObject name2 =name.getJSONObject(0);
+                JSONObject entity1 = name2.getJSONObject("entity");
+                entityName = entity1.getString("name");
+            } catch(Exception e){entityName = null;} //
             System.out.println("Text: " + tweet);
+            System.out.println("context: "+ entityName);
             System.out.println("Date created: " + date);
             System.out.println();
             tweetInfo(id,bearerToken);
