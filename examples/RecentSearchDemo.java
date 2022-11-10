@@ -28,21 +28,25 @@ public class RecentSearchDemo {
     // To set your enviornment variables in your terminal run the following line:
     // export 'BEARER_TOKEN'='<your_bearer_token>'
 
-    public static void main(String args[]) throws IOException, URISyntaxException {
+    public static int maxResults = 20; // must be >= 10 and <= 100
+
+    public static void main(String args[]) throws IOException, URISyntaxException, ParseException {
         String bearerToken = "AAAAAAAAAAAAAAAAAAAAAF2vhwEAAAAAmUihYKuFWe%2BmdJsnQCy4UQQa8sk%3DGcYDJdMZ8QXyuiA6KqUnLhxzo1RdlMoZGbMn4sjN3G6g0Whyui";
+
         if (null != bearerToken) {
             //Replace the search term with a term of your choice
 //            String response = search("from:TwitterDev OR from:SnowBotDev OR from:DailyNASA", bearerToken);
-            String response1 = search("cat -is:retweet", bearerToken);
-            System.out.println("\n——— Unformatted return ———\n");
-            System.out.println(response1);
+
+//            String response1 = search("cat -is:retweet", bearerToken);
+//            System.out.println("\n——— Unformatted return ———\n");
+//            System.out.println(response1);
 //
 //            String response = search("from:taylorswift13", bearerToken);
 //            System.out.println("\n——— Unformatted return ———\n");
 //            System.out.println(response);
 //            System.out.println("-----------------");
 //
-//            String response2 = search("from:elonmusk -is:reply", bearerToken);
+            String response2 = search("from:elonmusk -is:reply", bearerToken);
 //            System.out.println("\n——— Unformatted return ———\n");
 //            System.out.println(response2);
 
@@ -66,6 +70,7 @@ public class RecentSearchDemo {
         httpGet2.setHeader("Content-Type", "application/json");
         HttpResponse response2 = httpClient.execute(httpGet2);
         HttpEntity entity2 = response2.getEntity();
+
         if (null != entity2) {
             System.out.println("------User info--------");
             String info = EntityUtils.toString(entity2);
@@ -83,7 +88,7 @@ public class RecentSearchDemo {
     /*
      * This method calls the recent search endpoint with a the search term passed to it as a query parameter
      * */
-    private static String search(String searchString, String bearerToken) throws IOException, URISyntaxException {
+    private static String search(String searchString, String bearerToken) throws IOException, URISyntaxException, ParseException {
         String searchResponse = null;
 
         HttpClient httpClient = HttpClients.custom()
@@ -92,7 +97,9 @@ public class RecentSearchDemo {
                 .build();
 
         // I added the "tweet fields" that we want information about in this line
-        URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source,context_annotations&max_results=10"); // "&max_result=n" gives n number tweets; 10 <= n <= 100
+        URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source&max_results=" + maxResults); // "&max_result=n" gives n number tweets; 10 <= n <= 100
+//        URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source&min_faves=5");
+
 
         ArrayList<NameValuePair> queryParameters;
         queryParameters = new ArrayList<>();
@@ -120,24 +127,42 @@ public class RecentSearchDemo {
             JSONObject result = new JSONObject(searchResponse); // convert String to JSON Object
 
             JSONArray tweetList = result.getJSONArray("data");
+
             System.out.println(tweetList.length());
-            JSONObject oj = tweetList.getJSONObject(0); // gets one tweet from the list
-            String tweet = oj.getString("text");
-            String id = oj.getString("id");
-            String date = oj.getString("created_at");
-            String entityName;
+
+            for (int i=0; i<maxResults; i++) {
+                JSONObject oj = tweetList.getJSONObject(i); // gets one tweet from the list
+                String tweet = oj.getString("text");
+                String id = oj.getString("id");
+
+//                String date = oj.getString("created_at");
+//                SimpleDateFormat dt = new SimpleDateFormat("yyyyy-mm-dd hh:mm:ss");
+//                Date formattedDate = dt.parse(date);
+//                SimpleDateFormat dt1 = new SimpleDateFormat("yyyyy-mm-dd");
+//                System.out.println("Date: " + dt1.format(formattedDate));
+
+                Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(oj.getString("created_at"));
+                String formattedDate = new SimpleDateFormat("MM/dd/yyyy, h:ma").format(date);
+
+                int likes = oj.getJSONObject("public_metrics").getInt("like_count");
+
+                tweetInfo(id,bearerToken);
+                System.out.println("Tweet: " + tweet);
+//                System.out.println("Date: " + date);
+                System.out.println("Date: " + formattedDate);
+                System.out.println("Likes: " + likes);
+                System.out.println("——————————");
+            }
+
             // some of the tweets don't have contexts so I made a try catch to print out the entity name if they do
-            try {
-                JSONArray name = oj.getJSONArray("context_annotations");
-                JSONObject name2 =name.getJSONObject(0);
-                JSONObject entity1 = name2.getJSONObject("entity");
-                entityName = entity1.getString("name");
-            } catch(Exception e){entityName = null;} //
-            System.out.println("Text: " + tweet);
-            System.out.println("context: "+ entityName);
-            System.out.println("Date created: " + date);
-            System.out.println();
-            tweetInfo(id,bearerToken);
+//            try {
+//                JSONArray name = oj.getJSONArray("context_annotations");
+//                JSONObject name2 =name.getJSONObject(0);
+//                JSONObject entity1 = name2.getJSONObject("entity");
+//                entityName = entity1.getString("name");
+//            } catch(Exception e) {
+//                entityName = null;
+//            }
 
         }
 
