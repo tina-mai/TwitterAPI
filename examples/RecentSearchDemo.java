@@ -29,7 +29,7 @@ public class RecentSearchDemo {
     // export 'BEARER_TOKEN'='<your_bearer_token>'
 
     public static int maxResults = 100; // must be >= 10 and <= 100
-    public static TwitterUser user = new TwitterUser("elonmusk");
+    public static TwitterUser user = new TwitterUser("wsj");
 
     public static void main(String args[]) throws IOException, URISyntaxException, ParseException {
         String bearerToken = "AAAAAAAAAAAAAAAAAAAAAF2vhwEAAAAAmUihYKuFWe%2BmdJsnQCy4UQQa8sk%3DGcYDJdMZ8QXyuiA6KqUnLhxzo1RdlMoZGbMn4sjN3G6g0Whyui";
@@ -38,11 +38,11 @@ public class RecentSearchDemo {
             // Replace the search term with a term of your choice
 //            String response = search("from:TwitterDev OR from:SnowBotDev OR from:DailyNASA", bearerToken);
 
-//            String response1 = search("cat -is:retweet", bearerToken);
+//            String response = search("cat -is:retweet", bearerToken);
 //            System.out.println("\n——— Unformatted return ———\n");
 //            System.out.println(response1);
 
-            String response2 = search("from:elonmusk -is:reply -is:retweet", bearerToken);
+            String response = search("from:wsj -is:reply -is:retweet", bearerToken);
             Plot p = new Plot(user.getTimes(), user.getLikes());
 
         } else {
@@ -144,13 +144,13 @@ public class RecentSearchDemo {
                 user.addLike(likes);
                 user.addTime(time);
 
-                tweetInfo(id,bearerToken);
-                System.out.println("Tweet: " + tweet);
-//                System.out.println("Date: " + date);
-//                System.out.println("Date: " + formattedDate);
-                System.out.println("Time: " + time);
-                System.out.println("Likes: " + likes);
-                System.out.println("——————————");
+//                tweetInfo(id,bearerToken);
+//                System.out.println("Tweet: " + tweet);
+////                System.out.println("Date: " + date);
+////                System.out.println("Date: " + formattedDate);
+//                System.out.println("Time: " + time);
+//                System.out.println("Likes: " + likes);
+//                System.out.println("——————————");
 
             }
 
