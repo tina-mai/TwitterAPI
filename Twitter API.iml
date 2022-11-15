@@ -39,5 +39,15 @@
     </orderEntry>
     <orderEntry type="library" name="apache.httpcomponents.httpcore" level="project" />
     <orderEntry type="library" name="apache.httpcomponents.httpclient" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/jmathplot.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="github.yannrichet.JMathPlot" level="project" />
   </component>
 </module>

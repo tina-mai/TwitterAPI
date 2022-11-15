@@ -28,27 +28,22 @@ public class RecentSearchDemo {
     // To set your enviornment variables in your terminal run the following line:
     // export 'BEARER_TOKEN'='<your_bearer_token>'
 
-    public static int maxResults = 20; // must be >= 10 and <= 100
+    public static int maxResults = 100; // must be >= 10 and <= 100
+    public static TwitterUser user = new TwitterUser("elonmusk");
 
     public static void main(String args[]) throws IOException, URISyntaxException, ParseException {
         String bearerToken = "AAAAAAAAAAAAAAAAAAAAAF2vhwEAAAAAmUihYKuFWe%2BmdJsnQCy4UQQa8sk%3DGcYDJdMZ8QXyuiA6KqUnLhxzo1RdlMoZGbMn4sjN3G6g0Whyui";
 
         if (null != bearerToken) {
-            //Replace the search term with a term of your choice
+            // Replace the search term with a term of your choice
 //            String response = search("from:TwitterDev OR from:SnowBotDev OR from:DailyNASA", bearerToken);
 
 //            String response1 = search("cat -is:retweet", bearerToken);
 //            System.out.println("\n——— Unformatted return ———\n");
 //            System.out.println(response1);
-//
-//            String response = search("from:taylorswift13", bearerToken);
-//            System.out.println("\n——— Unformatted return ———\n");
-//            System.out.println(response);
-//            System.out.println("-----------------");
-//
-            String response2 = search("from:elonmusk -is:reply", bearerToken);
-//            System.out.println("\n——— Unformatted return ———\n");
-//            System.out.println(response2);
+
+            String response2 = search("from:elonmusk -is:reply -is:retweet", bearerToken);
+            Plot p = new Plot(user.getTimes(), user.getLikes());
 
         } else {
             System.out.println("There was a problem getting you bearer token. Please make sure you set the BEARER_TOKEN environment variable");
@@ -86,7 +81,7 @@ public class RecentSearchDemo {
     }
 
     /*
-     * This method calls the recent search endpoint with a the search term passed to it as a query parameter
+     * This method calls the recent search endpoint with a search term passed to it as a query parameter
      * */
     private static String search(String searchString, String bearerToken) throws IOException, URISyntaxException, ParseException {
         String searchResponse = null;
@@ -142,16 +137,21 @@ public class RecentSearchDemo {
 //                System.out.println("Date: " + dt1.format(formattedDate));
 
                 Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(oj.getString("created_at"));
-                String formattedDate = new SimpleDateFormat("MM/dd/yyyy, h:ma").format(date);
-
+//                String formattedDate = new SimpleDateFormat("MM/dd/yyyy, h:ma").format(date);
+                int time = date.getHours();
                 int likes = oj.getJSONObject("public_metrics").getInt("like_count");
+
+                user.addLike(likes);
+                user.addTime(time);
 
                 tweetInfo(id,bearerToken);
                 System.out.println("Tweet: " + tweet);
 //                System.out.println("Date: " + date);
-                System.out.println("Date: " + formattedDate);
+//                System.out.println("Date: " + formattedDate);
+                System.out.println("Time: " + time);
                 System.out.println("Likes: " + likes);
                 System.out.println("——————————");
+
             }
 
             // some of the tweets don't have contexts so I made a try catch to print out the entity name if they do

@@ -1,66 +1,56 @@
-import java.awt.*;
+import org.math.plot.*;
+
 import javax.swing.*;
-import java.awt.geom.*;
+import java.util.ArrayList;
 
-//Extends JPanel class
-public class Plot extends JPanel{
-    //initialize coordinates
-    int[] cord = {0, 20, 40, 60, 80};
-    int[] x_cord = {0, 5, 10, 12, 15};
-    int marg = 60;
+public class Plot {
 
-    protected void paintComponent(Graphics grf){
-        //create instance of the Graphics to use its methods
-        super.paintComponent(grf);
-        Graphics2D graph = (Graphics2D)grf;
+    private double[] x;
+    private double[] y;
 
-        //Sets the value of a single preference for the rendering algorithms.
-        graph.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    public Plot(ArrayList<Integer> times, ArrayList<Integer> likes) {
+        x = new double[times.size()];
+        y = new double[likes.size()];
 
-        // get width and height
-        int width = getWidth();
-        int height = getHeight();
-
-        // draw graph
-        graph.draw(new Line2D.Double(marg, marg, marg, height-marg));
-        graph.draw(new Line2D.Double(marg, height-marg, width-marg, height-marg));
-
-        //find value of x and scale to plot points
-        double x = (double)(width-2*marg)/(cord.length-1);
-        double scale = (double)(height-2*marg)/getMax();
-        //double xScale = (double)(width-)
-
-        //set color for points
-        graph.setPaint(Color.RED);
-
-        // set points to the graph
-        for(int i=0; i<cord.length; i++){
-        double x1 = width - marg - x_cord[i]; // weird things going on with the x, maybe play around with this
-        double y1 = height-marg-scale*cord[i];
-        graph.fill(new Ellipse2D.Double(x1-2, y1-2, 6, 6));
-        graph.drawString("hello", 10,10);
+        for (int i=0; i<times.size(); i++) {
+            x[i] = (double)(times.get(i));
+            y[i] = (double)(likes.get(i));
         }
+
+        plot(x, y);
     }
 
-    // create getMax() method to find maximum value
-    private int getMax() {
-    int max = -Integer.MAX_VALUE;
-    for (int i=0; i<cord.length; i++) {
-        if (cord[i]>max)
-            max = cord[i];
-        }
-    return max;
-    }
+//    public static void main(String[] args) {
+//        double[] x = {1, 2, 3, 35, 5};
+//        double[] y = {1, 10, 3, 4, 5};
+//
+//        // create your PlotPanel (you can use it as a JPanel)
+//        Plot2DPanel plot = new Plot2DPanel();
+//
+//        // add a line plot to the PlotPanel
+////        plot.addLinePlot("my plot", x, y);
+//        plot.addScatterPlot("scatter plot", x, y);
+//        plot.setAxisLabels("Time", "Likes");
+//
+//        // put the PlotPanel in a JFrame, as a JPanel
+//        JFrame frame = new JFrame("a plot panel");
+//        frame.setContentPane(plot);
+//        frame.setVisible(true);
+//    }
 
-    // main() method start
-    public static void main(String args[]) {
-        //create an instance of JFrame class
-        JFrame frame = new JFrame();
-        // set size, layout and location for frame.
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(new Plot());
-        frame.setSize(400, 400);
-        frame.setLocation(200, 200);
+    public void plot(double[] x, double[] y) {
+
+        // create your PlotPanel (you can use it as a JPanel)
+        Plot2DPanel plot = new Plot2DPanel();
+
+        // add a line plot to the PlotPanel
+//        plot.addLinePlot("my plot", x, y);
+        plot.addScatterPlot("scatter plot", x, y);
+        plot.setAxisLabels("Hour", "Likes");
+
+        // put the PlotPanel in a JFrame, as a JPanel
+        JFrame frame = new JFrame("a plot panel");
+        frame.setContentPane(plot);
         frame.setVisible(true);
     }
 }
