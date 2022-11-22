@@ -4,6 +4,7 @@ import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
 
 
 import com.google.gson.Gson;
@@ -23,6 +24,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+// returns tweets from the last week, with max of 10
+
 /*
  * Sample code to demonstrate the use of the Recent search endpoint
  * */
@@ -37,7 +40,7 @@ public class RecentSearchDemo {
 
     public static void main(String args[]) throws IOException, URISyntaxException, ParseException, java.text.ParseException {
         String bearerToken = "AAAAAAAAAAAAAAAAAAAAAF2vhwEAAAAAmUihYKuFWe%2BmdJsnQCy4UQQa8sk%3DGcYDJdMZ8QXyuiA6KqUnLhxzo1RdlMoZGbMn4sjN3G6g0Whyui";
-
+        Scanner s = new Scanner(System.in);
         if (null != bearerToken) {
             // Replace the search term with a term of your choice
 //            String response = search("from:TwitterDev OR from:SnowBotDev OR from:DailyNASA", bearerToken);
@@ -46,7 +49,10 @@ public class RecentSearchDemo {
 //            System.out.println("\n——— Unformatted return ———\n");
 //            System.out.println(response1);
 
-            String response = search("cats", bearerToken);
+
+            System.out.println("Type a word you'd like to see the like statistics for.");
+            String userResponse = s.nextLine();
+            String response = search(userResponse + " -is:reply -is:retweet", bearerToken);
             System.out.println(response);
 
             //String response = search("from:wsj -is:reply -is:retweet", bearerToken);
@@ -92,6 +98,8 @@ public class RecentSearchDemo {
      * */
     private static String search(String searchString, String bearerToken) throws IOException, URISyntaxException, ParseException, java.text.ParseException {
         String searchResponse = null;
+        int tweetCount = 0;
+        int totalLikes = 0;
 
         HttpClient httpClient = HttpClients.custom()
                 .setDefaultRequestConfig(RequestConfig.custom()
@@ -99,18 +107,21 @@ public class RecentSearchDemo {
                 .build();
 
         // I added the "tweet fields" that we want information about in this line
+        int time =0;
+        int likes = 0;
 
 
-        for (int j=1; j<7; j++){
-            for (int k =0; k<24; k++){
-                URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source&max_results=" + maxResults+ "&end_time=2022-11-1" + j + "T" + k + ":20:50.52Z");
-                if (k<10){
-                    uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source&max_results=" + maxResults+ "&end_time=2022-11-1" + j + "T0" + k + ":20:50.52Z");}// "&max_result=n" gives n number tweets; 10 <= n <= 100
+        for (int j=0; j<24; j++){
+            for (int k =6; k<9; k++){
+                URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source&max_results=" + maxResults+ "&end_time=2022-11-1" + k + "T" + j + ":20:50.52Z");
+                if (j<10){
+                    tweetCount++;
+                    uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source&max_results=" + maxResults+ "&end_time=2022-11-1" + k + "T0" + j + ":20:50.52Z");}// "&max_result=n" gives n number tweets; 10 <= n <= 100
 
 //        URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source&min_faves=5");
 
-        System.out.println(j);
-                System.out.println(k);
+        //System.out.println(j);
+         //       System.out.println(k);
         ArrayList<NameValuePair> queryParameters;
         queryParameters = new ArrayList<>();
         queryParameters.add(new BasicNameValuePair("query", searchString));
@@ -138,7 +149,7 @@ public class RecentSearchDemo {
 
             JSONArray tweetList = result.getJSONArray("data");
 
-            System.out.println(tweetList.length());
+            //System.out.println(tweetList.length());
 
             for (int i=0; i<tweetList.length(); i++) {
                 JSONObject oj = tweetList.getJSONObject(i); // gets one tweet from the list
@@ -153,13 +164,13 @@ public class RecentSearchDemo {
 
                 Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(oj.getString("created_at"));
 //                String formattedDate = new SimpleDateFormat("MM/dd/yyyy, h:ma").format(date);
-                int time = date.getHours();
-                int likes = oj.getJSONObject("public_metrics").getInt("like_count");
+                time = date.getHours();
+                likes = oj.getJSONObject("public_metrics").getInt("like_count");
+                totalLikes += likes;
 
                 //user.addLike(likes);
                 //user.addTime(time);
-                word.addLike(likes);
-                word.addTime(time);
+
 
 //                tweetInfo(id,bearerToken);
 //                System.out.println("Tweet: " + tweet);
@@ -170,6 +181,8 @@ public class RecentSearchDemo {
 //                System.out.println("——————————");
 
             }}}
+            word.addLike(totalLikes/tweetCount);
+            word.addTime(time);
 
             // some of the tweets don't have contexts so I made a try catch to print out the entity name if they do
 //            try {
