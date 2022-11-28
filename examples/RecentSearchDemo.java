@@ -3,6 +3,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -53,7 +54,7 @@ public class RecentSearchDemo {
             System.out.println("Type a word you'd like to see the like statistics for.");
             String userResponse = s.nextLine();
             String response = search(userResponse + " -is:reply -is:retweet", bearerToken);
-            System.out.println(response);
+//            System.out.println(response);
 
             //String response = search("from:wsj -is:reply -is:retweet", bearerToken);
             Plot p = new Plot(word.getTimes(), word.getLikes());
@@ -107,81 +108,113 @@ public class RecentSearchDemo {
                 .build();
 
         // I added the "tweet fields" that we want information about in this line
-        int time =0;
+        int time = 0;
         int likes = 0;
 
+//            Date now = new Date();
+//            Date end =
+//            String endTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(now);
 
-        for (int j=0; j<24; j++){
-            for (int k =6; k<9; k++){
-                URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source&max_results=" + maxResults+ "&end_time=2022-11-1" + k + "T" + j + ":20:50.52Z");
-                if (j<10){
-                    tweetCount++;
-                    uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source&max_results=" + maxResults+ "&end_time=2022-11-1" + k + "T0" + j + ":20:50.52Z");}// "&max_result=n" gives n number tweets; 10 <= n <= 100
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date()); // current date
+        cal.add(Calendar.HOUR, 8); // convert our time zone to GMT
+        cal.add(Calendar.MINUTE, -5);
 
-//        URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source&min_faves=5");
+        System.out.println("Current time: " + sdf.format(cal.getTime()));
 
-        //System.out.println(j);
-         //       System.out.println(k);
-        ArrayList<NameValuePair> queryParameters;
-        queryParameters = new ArrayList<>();
-        queryParameters.add(new BasicNameValuePair("query", searchString));
+        for (int j=0; j<24; j++) { // iterating through hours
 
-        uriBuilder.addParameters(queryParameters);
+            tweetCount = 0;
+            totalLikes = 0;
 
-        HttpGet httpGet = new HttpGet(uriBuilder.build());
+            for (int k=0; k<7; k++) { // iterating through days
 
-        httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken));
-        httpGet.setHeader("Content-Type", "application/json");
+                String endTime = sdf.format(cal.getTime());
 
+                System.out.println("End time: " + endTime);
 
-        HttpResponse response = httpClient.execute(httpGet);
-        HttpEntity entity = response.getEntity();
-//        if (null != entity) {
-//            searchResponse = EntityUtils.toString(entity, "UTF-8");
-//        }
+                URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source&max_results=" + maxResults + "&end_time=" + endTime);
 
-        if (entity != null) {
+                // averaging likes
 
-            // isolating tweet text from HTTP –> JSON format
-            searchResponse = EntityUtils.toString(entity);
-            // parsing JSON
-            JSONObject result = new JSONObject(searchResponse); // convert String to JSON Object
+                ArrayList<NameValuePair> queryParameters;
+                queryParameters = new ArrayList<>();
+                queryParameters.add(new BasicNameValuePair("query", searchString));
 
-            JSONArray tweetList = result.getJSONArray("data");
+                uriBuilder.addParameters(queryParameters);
 
-            //System.out.println(tweetList.length());
+                HttpGet httpGet = new HttpGet(uriBuilder.build());
 
-            for (int i=0; i<tweetList.length(); i++) {
-                JSONObject oj = tweetList.getJSONObject(i); // gets one tweet from the list
-                String tweet = oj.getString("text");
-                String id = oj.getString("id");
-
-//                String date = oj.getString("created_at");
-//                SimpleDateFormat dt = new SimpleDateFormat("yyyyy-mm-dd hh:mm:ss");
-//                Date formattedDate = dt.parse(date);
-//                SimpleDateFormat dt1 = new SimpleDateFormat("yyyyy-mm-dd");
-//                System.out.println("Date: " + dt1.format(formattedDate));
-
-                Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(oj.getString("created_at"));
-//                String formattedDate = new SimpleDateFormat("MM/dd/yyyy, h:ma").format(date);
-                time = date.getHours();
-                likes = oj.getJSONObject("public_metrics").getInt("like_count");
-                totalLikes += likes;
-
-                //user.addLike(likes);
-                //user.addTime(time);
+                httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken));
+                httpGet.setHeader("Content-Type", "application/json");
 
 
-//                tweetInfo(id,bearerToken);
-//                System.out.println("Tweet: " + tweet);
-////                System.out.println("Date: " + date);
-////                System.out.println("Date: " + formattedDate);
-//                System.out.println("Time: " + time);
-//                System.out.println("Likes: " + likes);
-//                System.out.println("——————————");
+                HttpResponse response = httpClient.execute(httpGet);
+                HttpEntity entity = response.getEntity();
+//                if (null != entity) {
+//                    searchResponse = EntityUtils.toString(entity, "UTF-8");
+//                }
 
-            }}}
-            word.addLike(totalLikes/tweetCount);
+                if (entity != null) {
+
+                    // isolating tweet text from HTTP –> JSON format
+                    searchResponse = EntityUtils.toString(entity);
+                    // parsing JSON
+                    JSONObject result = new JSONObject(searchResponse); // convert String to JSON Object
+
+                    JSONArray tweetList = result.getJSONArray("data");
+
+                    tweetCount += tweetList.length();
+
+                    //System.out.println(tweetList.length());
+
+                    for (int i=0; i<tweetList.length(); i++) {
+                        JSONObject oj = tweetList.getJSONObject(i); // gets one tweet from the list
+                        String tweet = oj.getString("text");
+                        String id = oj.getString("id");
+
+        //                String date = oj.getString("created_at");
+        //                SimpleDateFormat dt = new SimpleDateFormat("yyyyy-mm-dd hh:mm:ss");
+        //                Date formattedDate = dt.parse(date);
+        //                SimpleDateFormat dt1 = new SimpleDateFormat("yyyyy-mm-dd");
+        //                System.out.println("Date: " + dt1.format(formattedDate));
+
+                        Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(oj.getString("created_at"));
+        //                String formattedDate = new SimpleDateFormat("MM/dd/yyyy, h:ma").format(date);
+                        time = date.getHours();
+                        likes = oj.getJSONObject("public_metrics").getInt("like_count");
+                        totalLikes += likes;
+
+                        // user.addLike(likes);
+                        // user.addTime(time);
+
+//                        tweetInfo(id,bearerToken);
+//                        System.out.println("Tweet: " + tweet);
+//        //                System.out.println("Date: " + date);
+//        //                System.out.println("Date: " + formattedDate);
+//                        System.out.println("Time: " + time);
+//                        System.out.println("Likes: " + likes);
+//                        System.out.println("——————————");
+
+                    }
+                }
+                cal.add(Calendar.DATE, -1);
+            }
+            cal.add(Calendar.DATE, 7);
+            cal.add(Calendar.HOUR, -1);
+
+//            if (j == 0) {
+//                cal.add(Calendar.MINUTE, 5);
+//            }
+            if (j == 22) {
+                cal.add(Calendar.MINUTE, 5); // add 5 minutes to prevent stupid API from breaking, because it takes around 5 minutes to run
+            }
+
+            if (tweetCount == 0)
+                word.addLike(0);
+            else
+                word.addLike(totalLikes/tweetCount);
             word.addTime(time);
 
             // some of the tweets don't have contexts so I made a try catch to print out the entity name if they do
