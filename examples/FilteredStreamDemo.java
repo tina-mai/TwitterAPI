@@ -68,6 +68,7 @@ public class FilteredStreamDemo {
 
     /*
      * Helper method to setup rules before streaming data
+     * this method deletes existing rules and calls createRules
      * */
     private static void setupRules(String bearerToken, Map<String, String> rules) throws IOException, URISyntaxException {
         List<String> existingRules = getRules(bearerToken);

@@ -2,6 +2,9 @@ import java.util.ArrayList;
 
 public class TwitterWord {
     private String word;
+    // keeps track of the average likes and times the word was tweeted
+
+    // array lists with the average likes and corresponding hours
     private ArrayList<Integer> likes;
     private ArrayList<Integer> times;
 

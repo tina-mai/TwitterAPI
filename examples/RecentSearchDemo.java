@@ -32,21 +32,15 @@ public class RecentSearchDemo {
     // To set your environment variables in your terminal run the following line:
     // export 'BEARER_TOKEN'='<your_bearer_token>'
 
-    public static int maxResults = 100; // must be >= 10 and <= 100
-    public static TwitterUser user = new TwitterUser("wsj");
-    public static TwitterWord word = new TwitterWord("cats");
+    public static int maxResults = 100; // number of tweets retrieved in one search, must be >= 10 and <= 100
+    public static TwitterWord word = new TwitterWord("");
 
     public static void main(String args[]) throws IOException, URISyntaxException, ParseException, java.text.ParseException {
         String bearerToken = "AAAAAAAAAAAAAAAAAAAAAF2vhwEAAAAAmUihYKuFWe%2BmdJsnQCy4UQQa8sk%3DGcYDJdMZ8QXyuiA6KqUnLhxzo1RdlMoZGbMn4sjN3G6g0Whyui";
         Scanner s = new Scanner(System.in);
         if (null != bearerToken) {
-            // Replace the search term with a term of your choice
-//            String response = search("from:TwitterDev OR from:SnowBotDev OR from:DailyNASA", bearerToken);
 
-//            String response = search("cat -is:retweet", bearerToken);
-//            System.out.println("\n——— Unformatted return ———\n");
-//            System.out.println(response1);
-
+            // getting a word from a user to get twitter info about
 
             System.out.println("Type a word you'd like to see the like statistics for.");
             String userResponse = s.nextLine();
@@ -62,8 +56,11 @@ public class RecentSearchDemo {
     // this method calls the recent search endpoint with a search term (the user input word) passed to it as a query parameter
     private static String search(String searchString, String bearerToken) throws IOException, URISyntaxException, ParseException, java.text.ParseException {
         String searchResponse = null;
+        // keep track of tweet likes to use in graph later
         int tweetCount = 0;
         int totalLikes = 0;
+        int time = 0;
+        int likes = 0;
 
         HttpClient httpClient = HttpClients.custom()
                 .setDefaultRequestConfig(RequestConfig.custom()
@@ -119,65 +116,34 @@ public class RecentSearchDemo {
 
                     tweetCount += tweetList.length();
 
-                    //System.out.println(tweetList.length());
 
                     for (int i=0; i<tweetList.length(); i++) {
                         JSONObject oj = tweetList.getJSONObject(i); // gets one tweet from the list
-                        String tweet = oj.getString("text");
-                        String id = oj.getString("id");
 
-        //                String date = oj.getString("created_at");
-        //                SimpleDateFormat dt = new SimpleDateFormat("yyyyy-mm-dd hh:mm:ss");
-        //                Date formattedDate = dt.parse(date);
-        //                SimpleDateFormat dt1 = new SimpleDateFormat("yyyyy-mm-dd");
-        //                System.out.println("Date: " + dt1.format(formattedDate));
-
+                        // extracts date and time info from the tweet
                         Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(oj.getString("created_at"));
-        //                String formattedDate = new SimpleDateFormat("MM/dd/yyyy, h:ma").format(date);
                         time = date.getHours();
                         likes = oj.getJSONObject("public_metrics").getInt("like_count");
                         totalLikes += likes;
-
-                        // user.addLike(likes);
-                        // user.addTime(time);
-
-//                        tweetInfo(id,bearerToken);
-//                        System.out.println("Tweet: " + tweet);
-//        //                System.out.println("Date: " + date);
-//        //                System.out.println("Date: " + formattedDate);
-//                        System.out.println("Time: " + time);
-//                        System.out.println("Likes: " + likes);
-//                        System.out.println("——————————");
 
                     }
                 }
                 cal.add(Calendar.DATE, -1); // iterate to the next day
             }
-            cal.add(Calendar.DATE, 7);
-            cal.add(Calendar.HOUR, -1);
+            cal.add(Calendar.DATE, 7); // now we want to iterate through the last 7 days again for the next hour, so we reset the 7 days
+            cal.add(Calendar.HOUR, -1); // iterate to the next hour
 
-//            if (j == 0) {
-//                cal.add(Calendar.MINUTE, 5);
-//            }
             if (j == 22) {
                 cal.add(Calendar.MINUTE, 5); // add 5 minutes in the last iteration to prevent stupid API from breaking, because it takes around 5 minutes to run
             }
 
             if (tweetCount == 0)
                 word.addLike(0);
-            else
-                word.addLike(totalLikes/tweetCount);
+            else{
+                // add the average number of likes tweets posted at that hour get
+                // as an element in the likes arraylist
+                word.addLike(totalLikes/tweetCount);}
             word.addTime(time);
-
-            // some of the tweets don't have contexts so I made a try catch to print out the entity name if they do
-//            try {
-//                JSONArray name = oj.getJSONArray("context_annotations");
-//                JSONObject name2 =name.getJSONObject(0);
-//                JSONObject entity1 = name2.getJSONObject("entity");
-//                entityName = entity1.getString("name");
-//            } catch(Exception e) {
-//                entityName = null;
-//            }
 
         }
 

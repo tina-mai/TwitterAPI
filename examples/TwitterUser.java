@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 
+// this class is not used in our code
+
 public class TwitterUser {
 
     private String username;
