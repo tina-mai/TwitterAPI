@@ -6,17 +6,18 @@ import java.util.ArrayList;
 
 public class Plot {
 
-    private double[] x;
-    private double[] y;
+    private double[] x; // array of times
+    private double[] y; // array of likes
 
-    private double[][] morning;
-    private double[][] afternoon;
-    private double[][] night;
+    private double[][] morning; // 2D array of the x's and y's for morning times
+    private double[][] afternoon; // 2D array of the x's and y's for afternoon times
+    private double[][] night; // 2D array of the x's and y's for night times
 
     public Plot(ArrayList<Integer> times, ArrayList<Integer> likes) {
         x = new double[times.size()];
         y = new double[likes.size()];
 
+        // populate x and y with the arguments that the user inputs
         for (int i=0; i<times.size(); i++) {
             x[i] = (double)(times.get(i));
             y[i] = (double)(likes.get(i));
@@ -42,6 +43,7 @@ public class Plot {
         }
 
         // sort x and y values in morning, afternoon, and night 2D arrays
+
         morning = new double[mCount][2];
         afternoon = new double[aCount][2];
         night = new double[nCount][2];
@@ -68,60 +70,27 @@ public class Plot {
             }
         }
 
-//        plot(x, y);
         plot(morning, afternoon, night);
     }
 
-//    public static void main(String[] args) {
-//        double[] x = {1, 2, 3, 35, 5};
-//        double[] y = {1, 10, 3, 4, 5};
-//
-//        // create your PlotPanel (you can use it as a JPanel)
-//        Plot2DPanel plot = new Plot2DPanel();
-//
-//        // add a line plot to the PlotPanel
-////        plot.addLinePlot("my plot", x, y);
-//        plot.addScatterPlot("scatter plot", x, y);
-//        plot.setAxisLabels("Time", "Likes");
-//
-//        // put the PlotPanel in a JFrame, as a JPanel
-//        JFrame frame = new JFrame("a plot panel");
-//        frame.setContentPane(plot);
-//        frame.setVisible(true);
-//    }
-
-    public void plot(double[] x, double[] y) {
-
-        // create your PlotPanel (you can use it as a JPanel)
-        Plot2DPanel plot = new Plot2DPanel();
-
-        // add a line plot to the PlotPanel
-//        plot.addLinePlot("my plot", x, y);
-        plot.addScatterPlot("scatter plot", x, y);
-        plot.setAxisLabels("Hour", "Likes");
-        plot.setFixedBounds(0, 0, 24); // set the max of the x-axis to 24 since there are only 24 hours in a day
-        // TODO: scaling of x-axis is very weird
-
-        // put the PlotPanel in a JFrame, as a JPanel
-        JFrame frame = new JFrame("a plot panel");
-        frame.setSize(1000, 600);
-        frame.setContentPane(plot);
-        frame.setVisible(true);
-    }
-
+    // plot the morning, afternoon, and night arrays set up in the constructor
     public void plot(double[][] morning, double[][] afternoon, double[][] night) {
         Plot2DPanel plot = new Plot2DPanel();
 
+        // add each ScatterPlot of morning, afternoon, and night points to the plot
         plot.addScatterPlot("Morning (4am – 11am)", Color.GREEN, morning);
         plot.addScatterPlot("Afternoon (12pm – 7pm)", Color.RED, afternoon);
         plot.addScatterPlot("Night (8pm – 3am)", Color.BLUE, night);
 
+        // add a legend at the bottom of the screen
         plot.addLegend("SOUTH");
 
         plot.setAxisLabels("Hour", "Likes");
+
         plot.setFixedBounds(0, 0, 24);
 
-        JFrame frame = new JFrame("a plot panel");
+        // put the PlotPanel in a JFrame, as a JPanel
+        JFrame frame = new JFrame("Twitter Word Plot");
         frame.setSize(1000, 600);
         frame.setContentPane(plot);
         frame.setVisible(true);

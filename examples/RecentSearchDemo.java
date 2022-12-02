@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,9 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
 
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -25,14 +21,15 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-// returns tweets from the last week, with max of 10
+// INSTRUCTIONS:
+// - Run the RecentSearchDemo.java file
+// - Type in a search word (e.g. "cats")
+// - Give the program a few minutes to conjure up your magical graph
+// - Program will show a graph of the likes that the tweets with that word got across 24 hours in a day (sorted into morning, afternoon, and night); each hour is the average likes that tweets with that word got over the last 7 days
 
-/*
- * Sample code to demonstrate the use of the Recent search endpoint
- * */
 public class RecentSearchDemo {
 
-    // To set your enviornment variables in your terminal run the following line:
+    // To set your environment variables in your terminal run the following line:
     // export 'BEARER_TOKEN'='<your_bearer_token>'
 
     public static int maxResults = 100; // must be >= 10 and <= 100
@@ -54,9 +51,7 @@ public class RecentSearchDemo {
             System.out.println("Type a word you'd like to see the like statistics for.");
             String userResponse = s.nextLine();
             String response = search(userResponse + " -is:reply -is:retweet", bearerToken);
-//            System.out.println(response);
 
-            //String response = search("from:wsj -is:reply -is:retweet", bearerToken);
             Plot p = new Plot(word.getTimes(), word.getLikes());
 
         } else {
@@ -64,39 +59,7 @@ public class RecentSearchDemo {
         }
     }
 
-    // this method takes in the id generated from the search method, uses it to get expanded info (the username etc)
-    // about tweet
-    private static void tweetInfo(String id, String bearerToken) throws IOException, URISyntaxException{
-        HttpClient httpClient = HttpClients.custom()
-                .setDefaultRequestConfig(RequestConfig.custom()
-                        .setCookieSpec(CookieSpecs.STANDARD).build())
-                .build();
-
-        URIBuilder uri2 =  new URIBuilder("https://api.twitter.com/2/tweets/" + id + "?expansions=author_id");
-        HttpGet httpGet2 = new HttpGet(uri2.build());
-
-        httpGet2.setHeader("Authorization", String.format("Bearer %s", bearerToken));
-        httpGet2.setHeader("Content-Type", "application/json");
-        HttpResponse response2 = httpClient.execute(httpGet2);
-        HttpEntity entity2 = response2.getEntity();
-
-        if (null != entity2) {
-            System.out.println("------User info--------");
-            String info = EntityUtils.toString(entity2);
-            JSONObject result = new JSONObject(info);
-            JSONObject userInfo1 = result.getJSONObject("includes");
-            JSONArray userInfo2 = userInfo1.getJSONArray("users");
-            JSONObject userInfo3 = userInfo2.getJSONObject(0);
-            String name = userInfo3.getString("name");
-            String username = userInfo3.getString("username");
-            System.out.println("Name: " + name +";  Username: " +  username);
-        }
-
-    }
-
-    /*
-     * This method calls the recent search endpoint with a search term passed to it as a query parameter
-     * */
+    // this method calls the recent search endpoint with a search term (the user input word) passed to it as a query parameter
     private static String search(String searchString, String bearerToken) throws IOException, URISyntaxException, ParseException, java.text.ParseException {
         String searchResponse = null;
         int tweetCount = 0;
@@ -107,21 +70,15 @@ public class RecentSearchDemo {
                         .setCookieSpec(CookieSpecs.STANDARD).build())
                 .build();
 
-        // I added the "tweet fields" that we want information about in this line
-        int time = 0;
-        int likes = 0;
-
-//            Date now = new Date();
-//            Date end =
-//            String endTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(now);
-
+        // create a new Calendar object and set it to the current time, then change it by iterating backwards through each hour in the last 7 days
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date()); // current date
         cal.add(Calendar.HOUR, 8); // convert our time zone to GMT
-        cal.add(Calendar.MINUTE, -5);
+        cal.add(Calendar.MINUTE, -5); // subtract 5 minutes so the time zone conversion doesn't break Twitter rules
+        // WARNING: DON'T RUN CODE <5 MINUTES INTO A NEW HOUR (e.g. 2:04)
 
-        System.out.println("Current time: " + sdf.format(cal.getTime()));
+        System.out.println("Loading... (this may take a few minutes)");
 
         for (int j=0; j<24; j++) { // iterating through hours
 
@@ -131,8 +88,6 @@ public class RecentSearchDemo {
             for (int k=0; k<7; k++) { // iterating through days
 
                 String endTime = sdf.format(cal.getTime());
-
-                System.out.println("End time: " + endTime);
 
                 URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?tweet.fields=attachments,author_id,created_at,public_metrics,source&max_results=" + maxResults + "&end_time=" + endTime);
 
@@ -152,9 +107,6 @@ public class RecentSearchDemo {
 
                 HttpResponse response = httpClient.execute(httpGet);
                 HttpEntity entity = response.getEntity();
-//                if (null != entity) {
-//                    searchResponse = EntityUtils.toString(entity, "UTF-8");
-//                }
 
                 if (entity != null) {
 
@@ -199,7 +151,7 @@ public class RecentSearchDemo {
 
                     }
                 }
-                cal.add(Calendar.DATE, -1);
+                cal.add(Calendar.DATE, -1); // iterate to the next day
             }
             cal.add(Calendar.DATE, 7);
             cal.add(Calendar.HOUR, -1);
@@ -208,7 +160,7 @@ public class RecentSearchDemo {
 //                cal.add(Calendar.MINUTE, 5);
 //            }
             if (j == 22) {
-                cal.add(Calendar.MINUTE, 5); // add 5 minutes to prevent stupid API from breaking, because it takes around 5 minutes to run
+                cal.add(Calendar.MINUTE, 5); // add 5 minutes in the last iteration to prevent stupid API from breaking, because it takes around 5 minutes to run
             }
 
             if (tweetCount == 0)
