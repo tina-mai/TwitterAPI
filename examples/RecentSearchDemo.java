@@ -26,6 +26,7 @@ import org.json.JSONObject;
 // - Type in a search word (e.g. "cats" or "elon")
 // - Give the program a few minutes to conjure up your magical graph
 // - Program will show a graph of the likes that the tweets with that word got across 24 hours in a day (sorted into morning, afternoon, and night); each hour is the average likes that tweets with that word got over the last 7 days
+// WARNING: Don't run within 5 minutes of a new hour (e.g. 1:04 –> BAD)
 
 public class RecentSearchDemo {
 
